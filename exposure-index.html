@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>노출 계산기 — Exposure Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="exposure-style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">EXPOSURE<span>CALC</span></div>
+  <div class="header-tag">EV · 노출 삼각형</div>
+</header>
+
+<main>
+  <h1 class="page-title">EXPOSURE<br><span>TRIANGLE</span></h1>
+  <p class="page-sub">// 셔터속도 · 조리개 · ISO — 두 값을 고정하면 나머지가 계산됩니다</p>
+
+  <!-- Presets -->
+  <div class="preset-bar">
+    <span class="preset-label">PRESET</span>
+    <button class="preset-btn" onclick="applyPreset('sunny')">☀️ 맑은 야외</button>
+    <button class="preset-btn" onclick="applyPreset('indoor')">💡 실내</button>
+    <button class="preset-btn" onclick="applyPreset('night')">🌙 야경</button>
+    <button class="preset-btn" onclick="applyPreset('portrait')">👤 인물</button>
+    <button class="preset-btn" onclick="applyPreset('sport')">⚡ 스포츠</button>
+  </div>
+
+  <!-- Three panels -->
+  <div class="calculator-grid">
+
+    <!-- Shutter Speed -->
+    <div class="calc-panel" id="panel-shutter">
+      <div class="panel-header">
+        <div>
+          <div class="panel-icon">⏱</div>
+          <div class="panel-name">셔터 속도</div>
+          <div class="panel-desc">Shutter Speed</div>
+        </div>
+        <button class="lock-toggle active" id="lock-shutter" onclick="toggleLock('shutter')" title="고정/해제">🔒</button>
+      </div>
+      <div class="value-display" id="val-shutter">1/125</div>
+      <div class="value-unit">초 (seconds)</div>
+      <div class="slider-wrap">
+        <input type="range" id="sl-shutter" min="0" max="21" value="8" step="1" oninput="onSliderChange('shutter')">
+        <div class="slider-ticks">
+          <span class="tick">30"</span>
+          <span class="tick">1"</span>
+          <span class="tick">1/60</span>
+          <span class="tick">1/500</span>
+          <span class="tick">1/8000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aperture -->
+    <div class="calc-panel" id="panel-aperture">
+      <div class="panel-header">
+        <div>
+          <div class="panel-icon">◎</div>
+          <div class="panel-name">조리개</div>
+          <div class="panel-desc">Aperture (f-stop)</div>
+        </div>
+        <button class="lock-toggle active" id="lock-aperture" onclick="toggleLock('aperture')" title="고정/해제">🔒</button>
+      </div>
+      <div class="value-display" id="val-aperture">f/5.6</div>
+      <div class="value-unit">f-number</div>
+      <div class="slider-wrap">
+        <input type="range" id="sl-aperture" min="0" max="10" value="4" step="1" oninput="onSliderChange('aperture')">
+        <div class="slider-ticks">
+          <span class="tick">f/1</span>
+          <span class="tick">f/2.8</span>
+          <span class="tick">f/5.6</span>
+          <span class="tick">f/11</span>
+          <span class="tick">f/22</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ISO -->
+    <div class="calc-panel" id="panel-iso">
+      <div class="panel-header">
+        <div>
+          <div class="panel-icon">📡</div>
+          <div class="panel-name">ISO</div>
+          <div class="panel-desc">감도 (Sensitivity)</div>
+        </div>
+        <button class="lock-toggle" id="lock-iso" onclick="toggleLock('iso')" title="고정/해제">🔓</button>
+      </div>
+      <div class="value-display" id="val-iso">400</div>
+      <div class="value-unit">ISO</div>
+      <div class="slider-wrap">
+        <input type="range" id="sl-iso" min="0" max="9" value="3" step="1" oninput="onSliderChange('iso')">
+        <div class="slider-ticks">
+          <span class="tick">100</span>
+          <span class="tick">400</span>
+          <span class="tick">1600</span>
+          <span class="tick">6400</span>
+          <span class="tick">51200</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EV Bar -->
+  <div class="ev-panel">
+    <div class="ev-label-wrap">
+      <div class="ev-label">EV (노출값)</div>
+      <div class="ev-value" id="ev-display">10.6</div>
+      <div class="ev-label" style="margin-top:6px;" id="ev-status">적정 노출</div>
+    </div>
+    <div class="ev-bar-wrap">
+      <div class="ev-scale">
+        <span>EV 0 (암실)</span>
+        <span>EV 8 (실내)</span>
+        <span>EV 15 (야외)</span>
+        <span>EV 20 (설원)</span>
+      </div>
+      <div class="ev-track">
+        <div class="ev-fill" id="ev-fill" style="width:53%"></div>
+        <div class="ev-marker" id="ev-marker" style="left:53%"></div>
+      </div>
+      <div class="ev-situation" id="ev-situation">💡 일반적인 야외 흐린 날 / 실내 밝은 조명 환경에 해당합니다</div>
+    </div>
+  </div>
+
+  <!-- Combinations table -->
+  <div class="combos-panel">
+    <div class="combos-header">
+      <div>
+        <div class="combos-title">동일 노출 조합 추천</div>
+        <div class="combos-sub">// 같은 EV를 가진 다양한 조합 — 촬영 목적에 맞게 선택하세요</div>
+      </div>
+    </div>
+    <table class="combo-table">
+      <thead>
+        <tr>
+          <th>셔터속도</th>
+          <th>조리개</th>
+          <th>ISO</th>
+          <th>특성</th>
+        </tr>
+      </thead>
+      <tbody id="combo-tbody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- JS는 body 닫히기 직전에 불러오는 것이 권장됩니다 -->
+<script src="exposure-script.js"></script>
+</body>
+</html>
