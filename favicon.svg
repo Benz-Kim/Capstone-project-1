@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="#0d0d0d"/>
+
+  <!-- Aperture blades (6-blade aperture shape) -->
+  <g transform="translate(16,16)">
+    <!-- Outer ring -->
+    <circle r="13" fill="none" stroke="#e8c84a" stroke-width="1.5"/>
+
+    <!-- 6 aperture blades -->
+    <g fill="#e8c84a" opacity="0.92">
+      <!-- blade 1 -->
+      <path d="M0,-5 Q4,-2 3,4 Q0,7 -1,5 Q1,1 0,-5Z" transform="rotate(0)"/>
+      <!-- blade 2 -->
+      <path d="M0,-5 Q4,-2 3,4 Q0,7 -1,5 Q1,1 0,-5Z" transform="rotate(60)"/>
+      <!-- blade 3 -->
+      <path d="M0,-5 Q4,-2 3,4 Q0,7 -1,5 Q1,1 0,-5Z" transform="rotate(120)"/>
+      <!-- blade 4 -->
+      <path d="M0,-5 Q4,-2 3,4 Q0,7 -1,5 Q1,1 0,-5Z" transform="rotate(180)"/>
+      <!-- blade 5 -->
+      <path d="M0,-5 Q4,-2 3,4 Q0,7 -1,5 Q1,1 0,-5Z" transform="rotate(240)"/>
+      <!-- blade 6 -->
+      <path d="M0,-5 Q4,-2 3,4 Q0,7 -1,5 Q1,1 0,-5Z" transform="rotate(300)"/>
+    </g>
+
+    <!-- Center hole -->
+    <circle r="3.2" fill="#0d0d0d"/>
+    <!-- Center dot -->
+    <circle r="1.2" fill="#e8c84a"/>
+  </g>
+</svg>
