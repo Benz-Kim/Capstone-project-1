@@ -994,7 +994,7 @@ input[type=range]:not(:disabled)::-webkit-slider-thumb:hover {
 
   .calc-panel.locked::after {
     font-size: 0.58rem;
-    top: 12px; right: 14px;
+    top: 18px; right: 56px;
   }
 
   .panel-header { margin-bottom: 16px; }
