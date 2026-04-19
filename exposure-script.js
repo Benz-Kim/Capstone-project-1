@@ -374,6 +374,108 @@ function applyPreset(name) {
   updateUI();
 }
 
+
+// ── 9. EXIF 사진 정보 불러오기 ──
+
+let exifPending = null;
+
+function loadExifLib(callback) {
+  if (window.exifr) { callback(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/exifr/dist/lite.umd.js';
+  s.onload = callback;
+  document.head.appendChild(s);
+}
+
+function formatShutter(val) {
+  if (!val) return '—';
+  if (val >= 1) return val + 's';
+  return '1/' + Math.round(1 / val) + 's';
+}
+
+async function loadExif(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const filenameEl = document.getElementById('exif-filename');
+  const resultEl   = document.getElementById('exif-result');
+  const chipsEl    = document.getElementById('exif-chips');
+  const msgEl      = document.getElementById('exif-msg');
+  const applyBtn   = document.getElementById('exif-apply-btn');
+
+  filenameEl.textContent = file.name;
+  resultEl.style.display = 'block';
+  chipsEl.innerHTML = '<span class="exif-loading">▌ EXIF 정보를 읽는 중...</span>';
+  msgEl.textContent = '';
+  applyBtn.style.display = 'none';
+  exifPending = null;
+
+  loadExifLib(async function() {
+    try {
+      // 옵션 없이 전체 파싱 → 가장 호환성 높음
+      const exif = await window.exifr.parse(file);
+
+      const fnum  = exif && exif.FNumber     != null ? exif.FNumber     : null;
+      const etime = exif && exif.ExposureTime != null ? exif.ExposureTime : null;
+      const iso   = exif && exif.ISO         != null ? exif.ISO         : null;
+
+      const hasExif = fnum != null || etime != null || iso != null;
+
+      if (!hasExif) {
+        chipsEl.innerHTML = '<span class="exif-error">⚠ 셔터속도·조리개·ISO 정보를 찾을 수 없어요.<br><small style="font-size:0.62rem;color:var(--text-dim);">라이트룸 등 편집 프로그램에서 EXIF가 제거됐을 수 있습니다. 카메라 원본 JPG를 사용해주세요.</small></span>';
+        return;
+      }
+
+      // 슬라이더 인덱스 매핑
+      let sIdx = null, aIdx = null, iIdx = null;
+      if (etime != null) sIdx = SHUTTERS.reduce((b,s,i)  => Math.abs(s.val - etime) < Math.abs(SHUTTERS[b].val - etime)    ? i : b, 0);
+      if (fnum  != null) aIdx = APERTURES.reduce((b,a,i) => Math.abs(a.val - fnum)  < Math.abs(APERTURES[b].val - fnum)    ? i : b, 0);
+      if (iso   != null) iIdx = ISOS.reduce((b,v,i)      => Math.abs(v - iso)        < Math.abs(ISOS[b] - iso)             ? i : b, 0);
+
+      exifPending = { sIdx, aIdx, iIdx };
+
+      chipsEl.innerHTML = `
+        <div class="exif-chip"><span>셔터속도</span>${sIdx != null ? SHUTTERS[sIdx].label : '—'}</div>
+        <div class="exif-chip"><span>조리개</span>${aIdx != null ? APERTURES[aIdx].label : '—'}</div>
+        <div class="exif-chip"><span>ISO</span>${iIdx != null ? 'ISO ' + ISOS[iIdx].toLocaleString() : '—'}</div>
+      `;
+
+      const rawParts = [];
+      if (etime != null) rawParts.push('셔터 ' + formatShutter(etime));
+      if (fnum  != null) rawParts.push('f/' + fnum);
+      if (iso   != null) rawParts.push('ISO ' + iso);
+      msgEl.textContent = rawParts.length ? '📸 원본 EXIF: ' + rawParts.join('  ·  ') : '';
+
+      applyBtn.style.display = 'inline-block';
+
+    } catch (err) {
+      console.error(err);
+      chipsEl.innerHTML = '<span class="exif-error">⚠ EXIF를 읽는 중 오류가 발생했어요.<br><small style="font-size:0.62rem;color:var(--text-dim);">' + (err.message || String(err)) + '</small></span>';
+    }
+  });
+}
+
+function applyExif() {
+  if (!exifPending) return;
+  const { sIdx, aIdx, iIdx } = exifPending;
+  locks = { shutter: true, aperture: true, iso: false };
+  if (sIdx != null) idx.shutter  = sIdx;
+  if (aIdx != null) idx.aperture = aIdx;
+  if (iIdx != null) idx.iso      = iIdx;
+  updateUI();
+
+  const btn = document.getElementById('exif-apply-btn');
+  btn.textContent = '✓ 적용됨';
+  btn.style.background = 'var(--accent)';
+  btn.style.color = '#000';
+  setTimeout(() => {
+    btn.textContent = '이 세팅 계산기에 적용하기 ↗';
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 1500);
+}
+
+
 // ── 8. 초기화 ──
 document.getElementById('sl-shutter').max  = SHUTTERS.length - 1;
 document.getElementById('sl-aperture').max = APERTURES.length - 1;
