@@ -1,135 +1,117 @@
-# Capstone-project-1
+# EXPOSURECALC
 
-# 📷 Photo Exposure Calculator
+> 카메라 노출 삼각형 계산기 — 셔터속도 · 조리개 · ISO를 직관적으로 계산합니다
 
-> An interactive web tool that solves the Exposure Triangle in real time —
-> lock any two of Shutter Speed, Aperture, and ISO, and the third is calculated automatically.
+**[→ Live Demo](https://benz-kim.github.io/exposurecalc)**
 
----
+<br>
 
-## 🌟 Background & Motivation
+## Background & Motivation
 
-Perhaps the most common obstacle anyone encounters when first learning digital photography is the **Exposure Triangle**. Understanding intuitively how Shutter Speed, Aperture, and ISO connect with one another takes a considerable amount of time. Simply reading and memorizing a textbook is not enough — and unless you are majoring in photography, sitting through dedicated coursework and lectures is no easy commitment.
+사진을 배우기 시작하면 누구나 한 번쯤 막히는 지점이 있습니다. 바로 **노출 삼각형(Exposure Triangle)** 입니다.
 
-That is why I felt there needed to be a tool that lets people **actually change the numbers and see the results for themselves**.
+셔터속도를 올리면 ISO를 올려야 하는지, 조리개를 조이면 EV가 어떻게 바뀌는지 — 이 관계를 머릿속으로 계산하는 것은 초보자에게 쉽지 않습니다. 기존 앱들은 기능은 많지만 UI가 복잡하거나, 단순하지만 판단 근거를 알려주지 않는 경우가 많았습니다.
 
-As it happened, I was in the middle of building a web development portfolio at the time, and I was specifically looking for a project that could go beyond simple clone coding — something that implemented real domain knowledge directly in code, demonstrating both **engineering thinking and development ability** at once. The exposure calculator was an idea that naturally bridged the two.
+EXPOSURECALC는 세 가지 목표로 만들었습니다.
 
----
+- **즉각적인 피드백** — 슬라이더를 움직이는 즉시 EV와 판정이 바뀐다
+- **이유를 알려주는 판정** — "노출 부족"이 아니라 왜 부족한지, 어떤 환경에 맞는지 설명한다
+- **현장에서 쓸 수 있는 UI** — 스마트폰으로도 한 손으로 조작 가능한 모바일 퍼스트 설계
 
-## 🎯 Project Overview
+<br>
 
-**Goal:** Build an interactive web calculator where the user locks any two of the three parameters — Shutter Speed, Aperture, and ISO — and the remaining one is automatically solved using the EV (Exposure Value) formula.
+## Project Overview
 
-### Core Formula
-
-```
-EV = log₂(N² / t) - log₂(ISO / 100)
-```
-
-| Variable | Description |
+| 항목 | 내용 |
 |---|---|
-| `N` | Aperture f-number |
-| `t` | Shutter speed (seconds) |
-| `ISO` | Sensor sensitivity |
+| 유형 | 싱글 페이지 웹 앱 (SPA) |
+| 빌드 도구 | 없음 (순수 HTML/CSS/JS) |
+| 외부 의존성 | exifr (EXIF 파싱), Google Fonts |
+| 반응형 | 모바일 · 태블릿 · 데스크탑 완전 지원 |
+| 오프라인 | 로컬 파일로 바로 실행 가능 |
 
-### Key Features
+### 핵심 기능
 
-- 🔒 **Lock 2 of 3 parameters** → auto-solve the third via inverse calculation
-- 📊 **EV bar visualization** mapped across a 0–20 spectrum
-- 🌤 **Context-aware descriptions** for shooting environment (night, indoor, outdoor, etc.)
-- ⚡ **5 shooting presets** — Sunny / Indoor / Night / Portrait / Sports
-- 📋 **Equivalent exposure table** with characteristic tags (Motion Blur / Freeze / Bokeh)
+**노출 삼각형 계산기**
+셔터속도 · 조리개 · ISO 슬라이더를 움직이면 EV가 실시간으로 계산됩니다. 값 하나를 🔒 잠금하면 나머지 두 값으로 목표 EV를 맞출 수 있습니다. 맑은 야외 / 실내 / 야경 / 인물 / 스포츠 씬 프리셋도 제공합니다.
 
----
+**노출 판정 패널**
+Sunny 16 법칙 기반으로 현재 EV가 어떤 환경에 적합한지 7단계로 판정합니다. 컬러 미터 바로 노출 과부족을 시각화하고, 세팅별 주의사항도 안내합니다.
 
-## 🛠 Tech Stack
+**동일 노출 조합 추천**
+같은 EV를 유지하면서 셔터속도 · 조리개 · ISO를 다양하게 조합한 테이블을 보여줍니다. 동체 정지, 아웃포커스, 저노이즈 등 촬영 목적에 맞는 조합을 고를 수 있습니다.
 
-```
-index.html   — Structure
-style.css    — Styling
-script.js    — Calculation logic & UI interactions
-```
+**사진 EXIF 불러오기**
+사진 파일을 업로드하면 촬영 당시의 셔터속도 · 조리개 · ISO를 자동으로 읽어옵니다. 버튼 하나로 계산기에 바로 적용할 수 있습니다.
 
-- Vanilla HTML / CSS / JavaScript (no frameworks, no libraries)
-- Canvas API
-- Responsive design (desktop & mobile)
+<br>
 
----
+## Tech Stack
 
-## ⚙️ Development Process
+| 분류 | 사용 기술 | 선택 이유 |
+|---|---|---|
+| 마크업 | HTML5 | — |
+| 스타일 | CSS3 (Custom Properties, Grid, Flexbox) | 프레임워크 없이 반응형 구현 |
+| 로직 | Vanilla JavaScript (ES6+) | 번들러 불필요, 즉시 실행 가능 |
+| EXIF 파싱 | [exifr](https://github.com/MikeKovarik/exifr) | 경량 CDN 로드, 브라우저 호환성 우수 |
+| 폰트 | DM Mono, Bebas Neue, DM Sans | Google Fonts |
+| 아이콘 | SVG (인라인) | 외부 아이콘 라이브러리 미사용 |
 
-### ① Design Phase
+<br>
 
-The core design challenge was structuring the logic for *"automatically solving one of three interdependent variables."* Unlike a one-directional calculator, this required real-time tracking of which variables were locked, with a hard constraint that **exactly two must always be locked**. Defining this state management structure before writing any code was the most critical planning step.
+## 반응형 UI
 
-### ② Calculation Logic
+| 환경 | 브레이크포인트 | 레이아웃 |
+|---|---|---|
+| 데스크탑 | 1025px+ | 3열 그리드, 전체 패널 |
+| 태블릿 | 641 ~ 1024px | 3열 그리드, 하단 EV 바 |
+| 모바일 | 640px 이하 | 탭 전환(셔터/조리개/ISO), 하단 고정 EV 바 |
 
-The EV formula was implemented using JavaScript's `Math.log2()`. Inverse calculation was branched based on which parameter was unlocked:
+모바일에서는 화면 하단에 EV 숫자 + 컬러 미터 + 판정 텍스트가 항상 고정 표시되어 슬라이더를 조작하면서도 결과를 바로 확인할 수 있습니다.
 
-```js
-// Solving for Shutter Speed
-t = N² / 2^(EV + log₂(ISO / 100))
+<br>
 
-// Solving for Aperture
-N = √(2^(EV + log₂(ISO / 100)) × t)
-```
-
-Since the sliders operate on **discrete arrays** rather than continuous values, a nearest-index search was implemented to map each calculated result to the closest available value.
-
-### ③ UI Design
-
-The three parameter panels were laid out symmetrically so that locking and unlocking any of them felt natural and consistent. When a panel was unlocked (being auto-calculated), a **background color shift** and a `CALCULATING` label provided clear visual feedback about the current state.
-
-### ④ File Architecture Separation
-
-The project was initially developed as a single HTML file, then refactored into three separate files: `index.html`, `style.css`, and `script.js`. During this process, a path mismatch bug caused the files to fail to link correctly — debugging this firsthand gave practical experience with how browsers resolve relative file paths and the importance of **consistent naming conventions**.
-
-### ⑤ Extended Features
-
-After completing the core calculator, an equivalent exposure combination table was added. For a given EV, the table generates multiple valid combinations across different ISO and aperture settings, and tags each with its photographic characteristic so the user can pick the right setting for their shooting intention.
-
----
-
-## 📈 Results
-
-### Technical Outcomes
-
-- ✅ Implemented the full EV inverse calculation formula in JavaScript with **zero library dependencies**
-- ✅ Completed a stable 3-parameter lock state manager that always guarantees exactly two parameters are locked
-- ✅ Applied a separated HTML / CSS / JS file architecture, gaining practical experience with modular code organization
-- ✅ Implemented responsive design — functions correctly on both desktop and mobile
-
-### Key Learnings
-
-- Practical application of JS math functions (`Math.log2`, `Math.pow`, `Math.sqrt`) in a physics-based context
-- Nearest-value mapping between continuous inverse-calculated results and discrete slider arrays
-- Designing state that simultaneously affects multiple UI elements without inconsistency
-- The critical importance of file path management in a multi-file architecture
-
-### Portfolio Value
-
-This project goes beyond a typical calculator exercise by implementing a **real domain-specific formula** — the Exposure Value equation — directly in code. It demonstrates the ability to bridge engineering understanding and software development. The inverse calculation logic in particular showcases mathematical thinking applied directly to a practical programming problem.
-
----
-
-## 📁 File Structure
+## 파일 구조
 
 ```
-exposure-calculator/
-├── index.html          # HTML structure
-├── exposure-style.css  # Styles
-└── exposure-script.js  # Calculation logic & DOM interactions
+exposurecalc/
+├── index.html        # 메인 HTML 구조
+├── style.css         # 전체 스타일 (반응형 포함)
+├── script.js         # 계산 로직 및 UI 상호작용
+└── favicon.svg       # 조리개 모양 SVG 파비콘
 ```
 
----
+<br>
 
-## 🚀 Getting Started
+## 로컬 실행
 
-1. Download all three files into the **same folder**
-2. Open `index.html` in any modern browser
-3. No installation or build step required
+빌드 과정 없이 바로 실행됩니다.
 
----
+```bash
+git clone https://github.com/Benz-Kim/exposurecalc.git
+cd exposurecalc
+open index.html
+```
 
-*Built as part of a web development portfolio — combining domain knowledge in digital photography with hands-on JavaScript development.*
+또는 VS Code Live Server 등 정적 서버로 서빙해도 됩니다.
+
+<br>
+
+## 디자인 시스템
+
+```css
+/* 주요 색상 변수 */
+--bg:       #0d0d0d   /* 배경 */
+--surface:  #161616   /* 패널 */
+--accent:   #e8c84a   /* 골드 — 주요 강조 */
+--green:    #5ae8a0   /* 적정 노출 */
+--red:      #e85a4a   /* 노출 과부족 */
+--text:     #f0ece0   /* 본문 */
+--text-dim: #7a7568   /* 보조 텍스트 */
+```
+
+<br>
+
+## License
+
+MIT © [Benz-Kim](https://github.com/Benz-Kim)
