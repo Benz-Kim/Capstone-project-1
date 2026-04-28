@@ -2,8 +2,6 @@
 
 > 카메라 노출 삼각형 계산기 — 셔터속도 · 조리개 · ISO를 직관적으로 계산합니다
 
-**[→ Live Demo](https://benz-kim.github.io/exposurecalc)**
-
 <br>
 
 ## Background & Motivation
